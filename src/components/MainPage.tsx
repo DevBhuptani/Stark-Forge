@@ -43,6 +43,7 @@ const MainPage = () => {
     };
 
     try {
+      // @ts-ignore
       const response = await axios.request(options);
       const imageBlob = response.data;
       const imageObjectUrl = URL.createObjectURL(imageBlob);
@@ -96,8 +97,8 @@ const MainPage = () => {
       testAddress,
       connection?.wallet?.account
     );
-    const myCall = myTestContract.populate('safe_mint', [
-      connection?.wallet?.selectedAddress,
+    // @ts-ignore
+    const myCall = myTestContract.populate('safe_mint', [connection?.wallet?.selectedAddress,
       Math.floor(Math.random() * 10001),
       `https://silver-accessible-locust-527.mypinata.cloud/ipfs/${ipfs}`,
     ]);
