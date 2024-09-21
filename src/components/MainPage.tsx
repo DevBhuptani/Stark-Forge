@@ -11,12 +11,27 @@ import { Contract } from 'starknet';
 import contract_class from '../connector/abi.json';
 import { DynamicWidget } from '@dynamic-labs/sdk-react-core';
 
+const Modal = ({ isOpen, onClose, message }: any) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="bg-white rounded-lg p-6 shadow-lg">
+        <h1 className="text-2xl font-bold mb-4">⭐ Success ⭐</h1>
+        <h2 className="text-xl font-bold mb-4">{message}</h2>
+        <Button onClick={onClose}>Close</Button>
+      </div>
+    </div>
+  );
+};
+
 const MainPage = () => {
   const [prompt, setPrompt] = useState('');
   const [price, setPrice] = useState('0.05');
   const [isGenerating, setIsGenerating] = useState(false);
   const [nftImage, setNftImage] = useState<string>('');
   const [isImageReady, setIsImageReady] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     if (prompt.trim() === '') {
@@ -80,7 +95,8 @@ const MainPage = () => {
       });
 
       if (response?.status === 200) {
-        blockchainScript(response?.data?.IpfsHash);
+        await blockchainScript(response?.data?.IpfsHash);
+        setIsModalOpen(true);
       }
     } catch (error) {
       console.error('Error uploading to Pinata:', error);
@@ -97,6 +113,7 @@ const MainPage = () => {
       testAddress,
       connection?.wallet?.account
     );
+
     // @ts-ignore
     const myCall = myTestContract.populate('safe_mint', [connection?.wallet?.selectedAddress,
       Math.floor(Math.random() * 10001),
@@ -211,6 +228,12 @@ const MainPage = () => {
           )}
         </div>
       </main>
+
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        message="NFT successfully minted!"
+      />
     </div>
   );
 };
