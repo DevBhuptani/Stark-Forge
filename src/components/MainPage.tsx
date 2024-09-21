@@ -9,14 +9,14 @@ import Image from 'next/image';
 import { connect } from 'starknetkit';
 import { Contract } from 'starknet';
 import contract_class from '../connector/abi.json';
+import { DynamicWidget } from '@dynamic-labs/sdk-react-core';
 
 const MainPage = () => {
   const [prompt, setPrompt] = useState('');
   const [price, setPrice] = useState('0.05');
   const [isGenerating, setIsGenerating] = useState(false);
-  const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [nftImage, setNftImage] = useState<string>('');
-  const [isImageReady, setIsImageReady] = useState(false); // New state for image readiness
+  const [isImageReady, setIsImageReady] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     if (prompt.trim() === '') {
@@ -26,7 +26,7 @@ const MainPage = () => {
 
     e.preventDefault();
     setIsGenerating(true);
-    setIsImageReady(false); // Reset image readiness before generating
+    setIsImageReady(false);
 
     const options = {
       method: 'POST',
@@ -37,7 +37,7 @@ const MainPage = () => {
         'Content-Type': 'application/json',
       },
       data: {
-        prompt: 'Cat and dog dating each other', // You might want to replace this with `prompt`
+        prompt: prompt,
       },
       responseType: 'blob',
     };
@@ -53,12 +53,6 @@ const MainPage = () => {
     } finally {
       setIsGenerating(false);
     }
-  };
-
-  const handleConnectWallet = () => {
-    setTimeout(() => {
-      setIsWalletConnected(true);
-    }, 1000);
   };
 
   const handleMintingNFT = async () => {
@@ -116,14 +110,7 @@ const MainPage = () => {
       <header className="bg-white shadow-md">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-indigo-800">Stark-Forge</h1>
-          <Button
-            onClick={handleConnectWallet}
-            variant={isWalletConnected ? 'outline' : 'default'}
-            className="flex items-center"
-          >
-            <Wallet className="mr-2 h-4 w-4" />
-            {isWalletConnected ? 'Wallet Connected' : 'Connect Wallet'}
-          </Button>
+          <DynamicWidget />
         </div>
       </header>
       <main className="flex-grow flex items-center justify-center p-4">
@@ -213,7 +200,6 @@ const MainPage = () => {
             </div>
           </div>
 
-          {/* Mint NFT Button */}
           {isImageReady && nftImage && (
             <Button
               onClick={handleMintingNFT}

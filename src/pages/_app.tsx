@@ -9,6 +9,8 @@ import {
   voyager,
 } from '@starknet-react/core';
 import { mainnet, sepolia } from '@starknet-react/chains';
+import { StarknetWalletConnectors } from '@dynamic-labs/starknet';
+import { DynamicContextProvider } from '@dynamic-labs/sdk-react-core';
 
 export default function App({ Component, pageProps }: AppProps) {
   const { connectors } = useInjectedConnectors({
@@ -17,13 +19,20 @@ export default function App({ Component, pageProps }: AppProps) {
     order: 'random',
   });
   return (
-    <StarknetConfig
-      chains={[mainnet, sepolia]}
-      provider={publicProvider()}
-      connectors={connectors}
-      explorer={voyager}
+    <DynamicContextProvider
+      settings={{
+        environmentId: 'be72e05e-2712-4d85-8d2f-214df749013f',
+        walletConnectors: [StarknetWalletConnectors],
+      }}
     >
-      <Component {...pageProps} />
-    </StarknetConfig>
+      <StarknetConfig
+        chains={[mainnet, sepolia]}
+        provider={publicProvider()}
+        connectors={connectors}
+        explorer={voyager}
+      >
+        <Component {...pageProps} />
+      </StarknetConfig>
+    </DynamicContextProvider>
   );
 }
